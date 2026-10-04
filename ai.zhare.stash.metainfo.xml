@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>ai.zhare.stash</id>
+  <!-- PENDING the product naming decision (launch plan O2): "Stash" is a placeholder. -->
+  <name>Stash</name>
+  <summary>Describe it, stash it</summary>
+  <developer id="ai.zhare">
+    <name>Zhare.ai</name>
+  </developer>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>LicenseRef-proprietary=https://github.com/Zhare-ai/zhare-ai-web/blob/main/LICENSE</project_license>
+  <description>
+    <p>Type what you want, such as a page, a deck, a document or a dashboard, and Stash generates it on your device. Free previews; unlock to keep.</p>
+    <p>Stash runs from a bundled frontend and keeps working with no network.</p>
+  </description>
+  <launchable type="desktop-id">ai.zhare.stash.desktop</launchable>
+  <url type="homepage">https://zhare.ai</url>
+  <categories>
+    <category>Utility</category>
+  </categories>
+  <content_rating type="oars-1.1"/>
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+    <control>touch</control>
+  </supports>
+  <requires>
+    <display_length compare="ge">720</display_length>
+  </requires>
+  <!-- Screenshots are required by Flathub and not yet captured: add before submission. -->
+  <releases>
+    <release version="0.1.3600" date="2026-10-04">
+      <description>
+        <p>Release 0.1.3600.</p>
+      </description>
+    </release>
+    <release version="0.1.3542" date="2026-10-02">
+      <description>
+        <p>Initial Flathub packaging.</p>
+      </description>
+    </release>
+  </releases>
+</component>

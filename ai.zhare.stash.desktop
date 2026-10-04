@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Stash
+Comment=Describe it, stash it
+Exec=stash-backend
+Icon=ai.zhare.stash
+Terminal=false
+Categories=Utility;
+StartupWMClass=stash-backend

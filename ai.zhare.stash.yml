@@ -1,0 +1,83 @@
+# Flatpak manifest for Stash (app ID ai.zhare.stash). See ../../../../docs/store-release/linux.md.
+# Build is OFFLINE: Cargo crates come from the vendored tarball made by
+# scripts/vendor-sources.sh, and the frontend from the prebuilt dist/ archive.
+id: ai.zhare.stash
+runtime: org.gnome.Platform
+runtime-version: '50'   # verified present on Flathub 2026-10-03
+sdk: org.gnome.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.rust-stable
+command: stash-backend
+
+# Sandbox kept minimal. Deliberately absent: --filesystem=* of any kind,
+# --device=all, --socket=ssh-auth, --talk-name wildcards.
+finish-args:
+  - --share=ipc             # X11 shared memory (fallback-x11 only)
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri            # GPU for wgpu (WebGPU/WebGL2 in WebKitGTK)
+  - --share=network         # Firebase, *.zhare.ai (see CSP connect-src); also covers LAN sockets
+  - --socket=pulseaudio     # world audio and voice input
+
+# The world files ship as a Flathub-hosted extension, so they stay off the CDN and
+# the app falls back to the web host when the extension is absent (FC-STORE-14).
+add-extensions:
+  ai.zhare.stash.Worlds:
+    directory: extensions/worlds
+    autodownload: true
+    autodelete: true
+
+build-options:
+  append-path: /usr/lib/sdk/rust-stable/bin
+  env:
+    CARGO_HOME: /run/build/stash/cargo
+    CARGO_NET_OFFLINE: 'true'
+
+modules:
+  - name: stash
+    buildsystem: simple
+    build-commands:
+      # Point Cargo at the vendored sources, then build offline.
+      - mkdir -p cargo && cp cargo-config.toml cargo/config.toml
+      - >-
+        cargo --offline build --release --locked
+        --manifest-path apps/stash/Cargo.toml -p stash-backend
+        --bin stash-backend --features tauri/custom-protocol
+      - install -Dm755 apps/stash/target/release/stash-backend /app/bin/stash-backend
+      # Mount point for the Worlds extension (FC-STORE-14); the backend serves from here.
+      - install -d /app/extensions/worlds
+      - install -Dm644 ai.zhare.stash.desktop /app/share/applications/ai.zhare.stash.desktop
+      - install -Dm644 ai.zhare.stash.metainfo.xml /app/share/metainfo/ai.zhare.stash.metainfo.xml
+      - install -Dm644 apps/stash/backend/icons/128x128.png /app/share/icons/hicolor/128x128/apps/ai.zhare.stash.png
+      - install -Dm644 apps/stash/backend/icons/128x128@2x.png /app/share/icons/hicolor/256x256/apps/ai.zhare.stash.png
+      - install -Dm644 apps/stash/backend/icons/512x512.png /app/share/icons/hicolor/512x512/apps/ai.zhare.stash.png
+    sources:
+      # Monorepo source plus vendored crates, produced by scripts/vendor-sources.sh.
+      - type: archive
+        url: https://github.com/Zhare-ai/zhare-ai-web/releases/download/stash-flatpak-v0.1.3600/stash-flatpak-src.tar.zst
+        sha256: 8e91bef014653256fe278d35432bba4b1e2eb408d85b711f7fddb0450cd23761
+      # Prebuilt frontend (Trunk output), embedded by Tauri at compile time.
+      - type: archive
+        url: https://github.com/Zhare-ai/zhare-ai-web/releases/download/stash-flatpak-v0.1.3600/stash-ui-dist.tar.zst
+        sha256: 227c6a6b4b9ad8b7e7831195c12c33df4735caedef70011cebe090e8a50ba61b
+        dest: apps/stash/ui/dist
+      - type: file
+        path: cargo-config.toml
+      - type: file
+        path: ai.zhare.stash.desktop
+      - type: file
+        path: ai.zhare.stash.metainfo.xml
+
+  # The Worlds extension (ai.zhare.stash.Worlds), built from the same manifest.
+  # One extension for all worlds: the backend serves one tree, and a per-world split
+  # would multiply Flathub refs without letting a player skip anything useful.
+  - name: worlds
+    buildsystem: simple
+    build-extension: true
+    build-commands:
+      - cp -a worlds/. "${FLATPAK_DEST}/"
+    sources:
+      - type: archive
+        url: https://github.com/Zhare-ai/zhare-ai-web/releases/download/stash-flatpak-v0.1.3600/stash-worlds.tar.zst
+        sha256: 4a962fa8cfe0435b8ec8c38c94ec2cc67873d03ad72ff9edcf5306aed75efe23
+        dest: worlds
