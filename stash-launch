@@ -1,0 +1,4 @@
+#!/bin/sh
+# The binary lives in /app/extra (extra-data), not in /app/bin, so the Flatpak
+# command is this launcher.
+exec /app/extra/bin/stash-backend "$@"

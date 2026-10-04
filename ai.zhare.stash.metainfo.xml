@@ -27,11 +27,16 @@
   <requires>
     <display_length compare="ge">720</display_length>
   </requires>
-  <!-- Screenshots are required by Flathub and not yet captured: add before submission. -->
+  <screenshots>
+    <screenshot type="default">
+      <caption>A world in Stash</caption>
+      <image type="source" width="1280" height="720">https://dl.zhare.ai/stash/v0.1.3611/stash-world-1280x720.png</image>
+    </screenshot>
+  </screenshots>
   <releases>
-    <release version="0.1.3600" date="2026-10-04">
+    <release version="0.1.3611" date="2026-10-04">
       <description>
-        <p>Release 0.1.3600.</p>
+        <p>Release 0.1.3611.</p>
       </description>
     </release>
     <release version="0.1.3542" date="2026-10-02">

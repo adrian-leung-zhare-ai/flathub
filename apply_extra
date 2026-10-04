@@ -1,0 +1,7 @@
+#!/bin/sh
+# Runs once at install time inside the Flatpak sandbox, in /app/extra, after the
+# app tree downloaded from the Zhare.ai host has been verified against the sha256
+# pinned in the manifest. Plain sh and tar only, because the runtime is minimal.
+set -eu
+tar -xzf stash-app.tar.gz
+rm -f stash-app.tar.gz
